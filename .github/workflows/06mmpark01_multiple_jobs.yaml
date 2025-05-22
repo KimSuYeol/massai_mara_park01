@@ -51,7 +51,7 @@ jobs:
     
         - name: run springboot application
           run: |
-            java -jar ./application.jar & || exit 1
+            java -jar ./massai_mara_park-0.0.1-SHAPSHOT.jar &
             sleep 30
 
    test:
