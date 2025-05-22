@@ -1,4 +1,4 @@
-name: massai mark park 01 compose build
+name: massai mark park 01 compose dockerhub multiple
 
 on:
    workflow_dispatch
