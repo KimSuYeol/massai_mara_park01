@@ -30,15 +30,30 @@ jobs:
         - name: list build/libs directory
           run: ls -al ./build/libs
 
+        - name: Upload JAR artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: application.jar
+            path: build/libs/*SNAPSHOT.jar
+
    deploy:
     name: deploy
     needs: build
     runs-on: ubuntu-22.04
     steps:
+        - name: download JAR artifact
+          uses: actions/download-artifact@v4
+          with:
+            name: application.jar
+        
+        - name: check downloaded files
+          run: ls -al
+    
         - name: run springboot application
           run: |
-            java -jar ./build/libs/massai_mara_park-0.0.1-SNAPSHOT.jar &
+            java -jar ./application.jar & || exit 1
             sleep 30
+
    test:
     name: app test
     needs: deploy
