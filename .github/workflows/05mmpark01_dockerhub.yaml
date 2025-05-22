@@ -19,13 +19,13 @@ jobs:
 
         - name: docker operations
           run: |
-            docker build -t ${{ secrets.DOCKER_USERNAME }}/massai_mark:v1
+            docker build -t ${{ secrets.DOCKER_USERNAME }}/massai_mara:v1
             
-            docker push ${{ secrets.DOCKER_USERNAME }}/massai_mark:v1
+            docker push ${{ secrets.DOCKER_USERNAME }}/massai_mara:v1
         
         - name: logout from docker hub
           if: always()
           run: docker logout
 
-          
+
 
