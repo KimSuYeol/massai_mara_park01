@@ -24,7 +24,7 @@ jobs:
             load: true
             tags: massai_mara:v1
             cache-from: type=gha
-            cache-to: type-gha, mode=max
+            cache-to: type-gha,mode=max
 
         - name: run docker container
           run: |
