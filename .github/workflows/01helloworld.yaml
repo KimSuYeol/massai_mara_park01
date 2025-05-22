@@ -8,4 +8,4 @@ jobs:
       runs-on: ubuntu-22.04
       steps:
          - name: Print hello message
-           run: echo "Hello, GitHub Actions!"å
+           run: echo "Hello, GitHub Actions!"
