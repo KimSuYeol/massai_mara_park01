@@ -27,5 +27,25 @@ jobs:
           if: always()
           run: docker logout
 
+        - name: run with docker compose
+          run: |
+            docker compose up -d 
+            sleep 30
+
+            docker compose ps
+            docker compose logs
+
+        - name: run automated test #1
+          run: |
+            curl http://localhost:8080 || exit 1
+
+        - name: run automated test #1
+          run: |
+            curl http://localhost:8080/images || exit 1
+
+        - name: run automated test #1
+          run: |
+            curl http://localhost:8080/animal || exit 1
+
 
 
