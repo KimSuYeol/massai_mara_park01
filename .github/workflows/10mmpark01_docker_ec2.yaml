@@ -98,7 +98,7 @@ jobs:
           username: ${{env.USERNAME}}
           key: ${{secrets.EC2_PRIVATEKEY}}
           port: 22
-          source: "compose-multjobs.yaml"
+          source: "compose-multijobs.yaml"
           target: "/home/${{ env.USERNAME}}"
   
   run_test:
