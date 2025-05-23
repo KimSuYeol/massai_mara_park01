@@ -3,6 +3,10 @@ name: Test EC2 Connect
 on:
   workflow_dispatch
 
+env:
+    EC2_HOSTNAME: 43.201.150.221
+    EC2_USERNAME: ubuntu
+
 jobs:
   test-ec2-connect:
     runs-on: ubuntu-22.04
@@ -26,13 +30,18 @@ jobs:
           echo "SSH 연결 테스트 시작..."
 
           ssh -vvv -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
-            -i ~/.ssh/ec2_key -p 22 ${USER_NAME}@${HOSTNAME} '
+            -i ~/.ssh/ec2_key -p 22 ${{env.USER_NAME}}@${{env.HOSTNAME}} '
 
             echo "현재 사용자: $(whoami)"
             echo "호스트명: $(hostname)"
           '
-          
+
           echo "SSH 연결 테스트 종료..."
+
+      - name: upload README.md via SCP
+        run: |
+          echo "Hello, EC2 SCP" > README.md
+          scp -i ~/.ssh/ec2_key -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -P 22  README.md  ${{env.USER_NAME}}@${{env.HOSTNAME}}:~/ 
 
       - name: Cleanup private key
         if: always()
