@@ -30,7 +30,7 @@ jobs:
           echo "SSH 연결 테스트 시작..."
 
           ssh -vvv -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
-            -i ~/.ssh/ec2_key -p 22 ${{env.USER_NAME}}@${{env.HOSTNAME}} '
+            -i ~/.ssh/ec2_key -p 22 ${{env.EC2_USERNAME}}@${{env.EC2_HOSTNAME}} '
 
             echo "현재 사용자: $(whoami)"
             echo "호스트명: $(hostname)"
@@ -41,7 +41,7 @@ jobs:
       - name: upload README.md via SCP
         run: |
           echo "Hello, EC2 SCP" > README.md
-          scp -i ~/.ssh/ec2_key -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -P 22  README.md  ${{env.USER_NAME}}@${{env.HOSTNAME}}:~/ 
+          scp -i ~/.ssh/ec2_key -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -P 22  README.md  ${{env.EC2_USERNAME}}@${{env.EC2_HOSTNAME}}:~/ 
 
       - name: Cleanup private key
         if: always()
