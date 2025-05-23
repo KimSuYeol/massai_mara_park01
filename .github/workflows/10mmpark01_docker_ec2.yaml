@@ -12,7 +12,7 @@ env:
 
 jobs:
   build_image:
-    runs-on: macos-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout Code
@@ -29,6 +29,7 @@ jobs:
           file: ./Dockerfile
           push: false
           load: true
+          platforms: linux/arm64
           tags: ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -49,7 +50,7 @@ jobs:
           
   hub_push:
     needs: build_image
-    runs-on: macos-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: download JAR artifact
@@ -85,7 +86,7 @@ jobs:
 
   upload_compose:
     needs: hub_push
-    runs-on: macos-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout code
@@ -103,7 +104,7 @@ jobs:
   
   run_test:
     needs: upload_compose
-    runs-on: macos-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: deploy on EC2
