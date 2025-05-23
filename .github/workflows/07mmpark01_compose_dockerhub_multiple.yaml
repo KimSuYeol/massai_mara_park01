@@ -5,7 +5,7 @@ on:
 
 env:
   DOCKER_USERNAME: soosoomon
-  IMAGE_NAME: massai_mark
+  IMAGE_NAME: massai_mara
   IMAGE_TAG: v${{ github.run_number }}
 
 jobs:
