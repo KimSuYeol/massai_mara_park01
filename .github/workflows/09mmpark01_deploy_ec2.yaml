@@ -66,7 +66,7 @@ jobs:
           scp -i ~/.ssh/ec2_key \
           -o "StrictHostKeyChecking=no" \
           -o "UserKnownHostsFile=/dev/null" \
-          -P 12137  *SNAPSHOT.jar  \
+          -P 22  *SNAPSHOT.jar  \
           ${{env.EC2_USERNAME}}@${{env.EC2_HOSTNAME}}:~/
           
       - name: cleanup private key
@@ -95,7 +95,7 @@ jobs:
         run: |
           ssh -o "StrictHostKeyChecking=no" \
             -o "UserKnownHostsFile=/dev/null" \ 
-            -i ~/.ssh/ec2_key -p 12137 \
+            -i ~/.ssh/ec2_key -p 22 \
             ${{env.EC2_USERNAME}}@${{env.EC2_HOSTNAME}}   '
 
                 nohap java -jar ./massai_mara_park-0.0.1-SNAPSHOT.jar \
