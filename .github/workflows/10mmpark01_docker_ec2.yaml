@@ -7,7 +7,7 @@ env:
   DOCKER_USERNAME: soosoomon
   IMAGE_NAME: massai_mara
   IMAGE_TAG: v${{ github.run_number }}
-  HOSTNAME: 43.201.150.221
+  HOSTNAME: 43.202.45.47
   USERNAME: ubuntu
 
 jobs:
