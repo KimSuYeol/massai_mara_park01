@@ -1,7 +1,7 @@
 name: massai mark park 01 docker ec2
 
 on:
-  workflow_dispatch
+   workflow_dispatch
 
 env:
   DOCKER_USERNAME: soosoomon
@@ -18,9 +18,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Docker buildx
+      - name: setup docker buildx
         uses: docker/setup-buildx-action@v3
 
+            
       - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
@@ -32,90 +33,90 @@ jobs:
           tags: ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: Check built image
-        run: docker image ls
-
-      - name: Save Docker image
-        run: docker save ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} > image.tar
+        
+      - name: check image
+        run: |
+          docker image ls
+          
+      - name: save docker image
+        run: |
+          docker save ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} > image.tar
 
       - name: Upload image artifact
         uses: actions/upload-artifact@v4
         with:
           name: docker-image
           path: image.tar
-
+          
   hub_push:
     needs: build_image
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Download image artifact
+      - name: download JAR artifact
         uses: actions/download-artifact@v4
         with:
           name: docker-image
+        
+      - name: check downloaded image
+        run: ls -al
 
-      - name: Load Docker image
-        run: docker load < image.tar
+      - name: load docker image
+        run: |
+          docker load < image.tar
 
-      - name: Login to Docker Hub
+  
+      - name: login to docker hub
         uses: docker/login-action@v3
         with:
-          username: ${{ env.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{env.DOCKER_USERNAME}} 
+          password: ${{secrets.DOCKER_PASSWORD}}
 
-      - name: Push to Docker Hub
+      - name: docker operations
         run: |
-          docker push ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-          docker tag ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
-          docker push ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
-
-      - name: Logout from Docker Hub
+          docker push ${{env.DOCKER_USERNAME}}/${{env.IMAGE_NAME}}:${{env.IMAGE_TAG}}
+          docker tag ${{env.DOCKER_USERNAME}}/${{env.IMAGE_NAME}}:${{env.IMAGE_TAG}} \
+            ${{env.DOCKER_USERNAME}}/${{env.IMAGE_NAME}}:latest
+          docker push ${{env.DOCKER_USERNAME}}/${{env.IMAGE_NAME}}:latest
+          docker search ${{env.IMAGE_NAME}}:latest
+          
+      - name: logout from docker hub
         if: always()
         run: docker logout
 
-  upload_files:
+  upload_compose:
     needs: hub_push
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Upload docker-compose.yaml to EC2
+      - name: copy file to EC2
         uses: appleboy/scp-action@master
         with:
-          host: ${{ env.HOSTNAME }}
-          username: ${{ env.USERNAME }}
-          key: ${{ secrets.EC2_PRIVATEKEY }}
+          host: ${{ env.HOSTNAME}}
+          username: ${{env.USERNAME}}
+          key: ${{secrets.EC2_PRIVATEKEY}}
           port: 22
           source: "compose-multijobs.yaml"
-          target: "/home/${{ env.USERNAME }}"
-
-      - name: Upload application.yml to EC2
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ env.HOSTNAME }}
-          username: ${{ env.USERNAME }}
-          key: ${{ secrets.EC2_PRIVATEKEY }}
-          port: 22
-          source: "application.yml"
-          target: "/home/${{ env.USERNAME }}"
-
+          target: "/home/${{ env.USERNAME}}"
+  
   run_test:
-    needs: upload_files
+    needs: upload_compose
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Deploy on EC2
+      - name: deploy on EC2
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ env.HOSTNAME }}
-          username: ${{ env.USERNAME }}
-          key: ${{ secrets.EC2_PRIVATEKEY }}
+          host: ${{ env.HOSTNAME}}
+          username: ${{env.USERNAME}}
+          key: ${{secrets.EC2_PRIVATEKEY}}
           port: 22
           script: |
-            docker compose -f ./compose-multijobs.yaml up -d
+            docker compose -f ./compose-multijobs.yaml up -d 
             sleep 30
+
             docker compose ps
             docker compose logs
