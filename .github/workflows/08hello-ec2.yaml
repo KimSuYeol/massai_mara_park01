@@ -1,0 +1,40 @@
+name: Test EC2 Connect
+
+on:
+  workflow_dispatch
+
+jobs:
+  test-ec2-connect:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Setup SSH Directory
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+      - name: Make private key file
+        run: |
+          echo "${{ secrets.EC2_PRIVATEKEY }}" > ~/.ssh/ec2_key
+          chmod 600 ~/.ssh/ec2_key
+
+      - name: Test SSH connect to EC2
+        env:
+          HOSTNAME: "43.201.150.221"
+          USER_NAME: "ubuntu"
+        run: |
+          echo "SSH 연결 테스트 시작..."
+
+          ssh -vvv -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+            -i ~/.ssh/ec2_key -p 22 ${USER_NAME}@${HOSTNAME} '
+
+            echo "현재 사용자: $(whoami)"
+            echo "호스트명: $(hostname)"
+          '
+          
+          echo "SSH 연결 테스트 종료..."
+
+      - name: Cleanup private key
+        if: always()
+        run: |
+          rm -f ~/.ssh/ec2_key
